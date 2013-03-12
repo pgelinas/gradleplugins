@@ -1,7 +1,7 @@
 //Gradle 0.9-rc-1
 //Command Example: gradle pdeClean pdeBuild -i -S
 
-apply plugin: "FeaturePde"
+apply plugin: "pdeBuild"
 defaultTasks "pdeClean", "pdeUpload"
 
 buildscript { 
@@ -9,18 +9,18 @@ buildscript {
 		flatDir(dirs: "../../../build/libs")
 	} 
     dependencies {
-        classpath ":pdePlugin:7.+" 
+        classpath ":pdePlugin:8.+" 
     }
 }
 
-configure(FeaturePde){	
-
+pdeBuild {	
+    type = "feature"
     /* the working directory
      * all plugins and features source code will be fetched here */
     buildDirectory = "${rootDir}/work"
 
     /* all artifacts produced by the PDE build will be unziped here */
-    //publishDirectory = "${buildDirectory}/publish"
+    publishDirectory = "${buildDirectory}/publish"
     
     /* enter here all the feature ids that you want to build.
      * the Feature directory name must match the feature ID in feature.xml */
@@ -33,23 +33,23 @@ configure(FeaturePde){
 
     /* timestamp for the build artifacts. this will also be the name of the 
      * output folder for all archives that the build will produce. */
-    buildId = "20101124-0845"
+//    buildId = "20101124-0845"
 
     /* the target platform to use to build the features (the $base folder MUST contain an "eclipse" folder) */
-    base = "R:/platform/desk/3.3"
+    base = "/usr/local/eclipse/eclipse-gradle"
     
     /* use .link files instead of the -DpluginPath variable (default is false) */
-    usePreviousLinks = true
+//    usePreviousLinks = true
 
     /* extension locations for the target platform.
      * - if building with eclipse 3.5 (usePreviousLinks = false) 
      *   these values will be passed as the -DpluginPath variable separated by path separators 
      * - if building with eclipse 3.3 (usePreviousLinks = true)
      *   these values will end up in .link files in the target platform */
-    extLocations = ["ext/loc/1", "ext/loc/2", "ext/loc/3"]
+//    extLocations = ["ext/loc/1", "ext/loc/2", "ext/loc/3"]
 
     /* if paths provided in extLocations are not absolute, gradle will append them to this parameter */
-    eclipseExtensionsRoot = "R:/"
+//    eclipseExtensionsRoot = "R:/"
 
     /* folder containing existing .link files (extLocations will be ignored) */
     //linksSrcDirectory = "/path/to/links/dir"
@@ -57,7 +57,7 @@ configure(FeaturePde){
     /* the eclipse runtime that will execute the build.
      * this location must contain a plugins folder with the PDE plugin in it
      * the PDE bundle is a folder named : org.eclipse.pde.build_${pdeBuildPluginVersion} */
-    eclipseLauncher = "R:/launcher/3.5-basebuilder"
+    eclipseLauncher = "/usr/local/eclipse/eclipse-3.8"
 
     /* equinox eclipse launcher to use for launching the org.eclipse.ant.core.antRunner application */
     //equinoxLauncherPluginVersion = "1.0.201.R35x_v20090715"

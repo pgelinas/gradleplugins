@@ -17,154 +17,74 @@
       [Enter License Description here.]
    </license>
 
-   <plugin
-         id="com.ibm.icu"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <requires>
+      <import plugin="org.apache.ant"/>
+   
 
-   <plugin
-         id="org.eclipse.core.commands"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <import plugin=
+         "com.ibm.icu"/>
 
-   <plugin
-         id="org.eclipse.core.contenttype"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <import plugin=
+         "org.eclipse.core.commands"/>
 
-   <plugin
-         id="org.eclipse.core.databinding"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <import plugin=
+         "org.eclipse.core.contenttype"/>
 
-   <plugin
-         id="org.eclipse.core.databinding.observable"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <import plugin=
+         "org.eclipse.core.databinding"/>
 
-   <plugin
-         id="org.eclipse.core.databinding.property"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <import plugin=
+         "org.eclipse.core.databinding.observable"/>
 
-   <plugin
-         id="org.eclipse.core.expressions"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <import plugin=
+         "org.eclipse.core.databinding.property"/>
 
-   <plugin
-         id="org.eclipse.core.jobs"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <import plugin=
+         "org.eclipse.core.expressions"/>
 
-   <plugin
-         id="org.eclipse.core.runtime"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <import plugin=
+         "org.eclipse.core.jobs"/>
 
-   <plugin
-         id="org.eclipse.core.runtime.compatibility.registry"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         fragment="true"/>
+   <import plugin=
+         "org.eclipse.core.runtime"/>
 
-   <plugin
-         id="org.eclipse.equinox.app"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <import plugin=
+         "org.eclipse.core.runtime.compatibility.registry"/>
 
-   <plugin
-         id="org.eclipse.equinox.common"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <import plugin=
+         "org.eclipse.equinox.app"/>
 
-   <plugin
-         id="org.eclipse.equinox.preferences"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <import plugin=
+         "org.eclipse.equinox.common"/>
 
-   <plugin
-         id="org.eclipse.equinox.registry"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <import plugin=
+         "org.eclipse.equinox.preferences"/>
 
-   <plugin
-         id="org.eclipse.jface"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <import plugin=
+         "org.eclipse.equinox.registry"/>
 
-   <plugin
-         id="org.eclipse.jface.databinding"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <import plugin=
+         "org.eclipse.jface"/>
 
-   <plugin
-         id="org.eclipse.osgi"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <import plugin=
+         "org.eclipse.jface.databinding"/>
 
-   <plugin
-         id="org.eclipse.swt"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <import plugin=
+         "org.eclipse.osgi"/>
 
-   <plugin
-         id="org.eclipse.ui"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <import plugin=
+         "org.eclipse.swt"/>
 
-   <plugin
-         id="org.eclipse.ui.workbench"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <import plugin=
+         "org.eclipse.ui"/>
 
-   <plugin
-         id="org.eclipse.help"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
+   <import plugin=
+         "org.eclipse.ui.workbench"/>
 
-   <plugin
+   <import plugin=
+         "org.eclipse.help"/>
+</requires>
+<plugin
          id="SamplePlugin"
          download-size="0"
          install-size="0"

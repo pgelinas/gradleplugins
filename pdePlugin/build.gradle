@@ -1,23 +1,8 @@
-/**
- Chanelog
- 5.0: Initial changelog
- 6.0: Added a buildpath parameter
- 6.1: Built with gradle-0.9-rc-1
- 6.2: Added jvmOptions to the ant.java options
- 6.3->6.4: Fixed internal errors
- 6.7: Added javacSource and javacTarget as parameters + eclipse directory
- 6.7.1: Fixed bug on dataDirectory
- 6.7.2: use CMSClassUnloadingEnabled in place of CMSPermGenSweepingEnabled
- 6.8: use extLocations
- 7.0.1: full refactoring, .link files generation, target platform cleaning, etc.
- 7.0.2: ant BuildException catching for avoiding ugly stack traces when the PDE build fails
- */
-
 apply plugin: 'groovy'
 apply plugin: 'maven'
 apply plugin: 'eclipse'
 
-version = '7.1.3' // + new java.text.SimpleDateFormat("yyyyMMddHHmmss").format(new Date())
+version = '8.0' // + new java.text.SimpleDateFormat("yyyyMMddHHmmss").format(new Date())
 
 group = "com.thalesgroup.gradle.plugins"
 

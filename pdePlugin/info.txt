@@ -1,1 +1,0 @@
-The enables users to build Eclipse RCP applications

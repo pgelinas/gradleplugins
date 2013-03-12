@@ -23,7 +23,6 @@
 package com.thalesgroup.gradle.pde.tasks
 
 import groovy.util.AntBuilder;
-import java.io.File;
 
 public class CleanTargetPlatformAction {
     
@@ -44,7 +43,7 @@ public class CleanTargetPlatformAction {
     public boolean clean() throws FileNotFoundException {
         println "Cleaning target platform..."
 
-        String equinoxLauncherJar = resolveEquinoxLauncherJarFile();
+        String equinoxLauncherJar = EclipseUtils.resolveEquinoxLauncherJarFile(baseLocation);
         
         List<String> args = new ArrayList<String>()
         args << "-classpath " + equinoxLauncherJar
@@ -58,21 +57,5 @@ public class CleanTargetPlatformAction {
         ant.exec(executable: "java", dir: buildDirectory, failonerror: true) { 
             arg(line: args.join(" ")) 
         }
-    }
-
-    
-    private String resolveEquinoxLauncherJarFile() throws FileNotFoundException {
-        File pluginsDir = new File(baseLocation, "plugins");
-        if (!pluginsDir.exists() || !pluginsDir.isDirectory()) {
-            throw new FileNotFoundException(pluginsDir.toString() + " does not exist.")
-        }
-        for (String bundle : pluginsDir.list()) {
-            File bundleFile = new File(pluginsDir, bundle);
-            if (bundleFile.getName().startsWith("org.eclipse.equinox.launcher")
-                && bundleFile.getName().endsWith(".jar")) {
-                return bundleFile.getAbsolutePath();
-            }
-        }
-        throw new FileNotFoundException("Could not find a plugin matching org.eclipse.equinox.launcher");
     }
 }

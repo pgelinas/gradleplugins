@@ -46,7 +46,10 @@ class AntPdeBuild {
         if (conv.getEquinoxLauncherPluginVersion()) {
             args << "-jar \"${launcher}/plugins/org.eclipse.equinox.launcher_${conv.getEquinoxLauncherPluginVersion()}.jar\"";
         } else {
-            args << "-jar \"${launcher}/plugins/org.eclipse.equinox.launcher.jar\"";
+            println "No launcher jar version supplied, automatically resolving which jar to use."
+            String launcherJar = EclipseUtils.resolveEquinoxLauncherJarFile(launcher)
+            println "Found ${launcherJar}"
+            args << "-jar \"${launcherJar}\""
         }
         
         args << "-application org.eclipse.ant.core.antRunner"
@@ -56,7 +59,9 @@ class AntPdeBuild {
         if (conv.getPdeBuildPluginVersion()) {
             scriptsDir = "${launcher}/plugins/org.eclipse.pde.build_${conv.getPdeBuildPluginVersion()}/scripts"
         } else {
-            scriptsDir = "${launcher}/plugins/org.eclipse.pde.build/scripts"
+            println "No pde build plugin version supplied, automatically resolving the script dir."
+            scriptsDir = resolveScriptDir(launcher)
+            println "Found ${scriptsDir}"
         }
         
         if (conv.getType() == BuildType.product) {
@@ -108,5 +113,13 @@ class AntPdeBuild {
         ant.exec(executable: "java", dir: conv.getBuildDirectory(), failonerror: true) {
             arg(line: eclipseCommand)
         }
+    }
+
+    private String resolveScriptDir(String launcherDir){
+        File pluginsDir = new File(launcherDir, "plugins")
+        File pdeBuildDir = pluginsDir.listFiles().find {
+            it.directory && it.name.equals("org.eclipse.pde.build") || it.name.startsWith("org.eclipse.pde.build_")
+        }
+        return "${pdeBuildDir.absolutePath}/scripts"
     }
 }

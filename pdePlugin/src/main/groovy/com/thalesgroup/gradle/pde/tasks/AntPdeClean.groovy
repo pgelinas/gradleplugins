@@ -26,11 +26,16 @@ package com.thalesgroup.gradle.pde.tasks
 import java.io.File;
 import java.io.FileNotFoundException;
 
+import org.gradle.api.internal.*;
+import org.gradle.api.tasks.*;
+
 import com.thalesgroup.gradle.pde.PdeConvention;
 
-class AntPdeClean {
+class AntPdeClean extends ConventionTask {
     
-    void execute(PdeConvention conv, AntBuilder ant) {
+    @TaskAction
+    void clean() {
+        PdeConvention conv = project.pdeBuild;
         println "Deleting the build directory..."
         //delete the working directory
         ant.delete(dir: conv.getBuildDirectory());

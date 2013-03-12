@@ -23,24 +23,21 @@
 
 package com.thalesgroup.gradle.pde;
 
-
-
-
 import groovy.util.XmlSlurper;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.Project
 
-public abstract class PdeConvention {
+public class PdeConvention {
     
-    // gradle fields
-    Project project;
-
     // mandatory plugin fields
+    String[] features;
+    BuildType type;
     List<String> pluginsSrcDirList;
     List<String> featuresSrcDirList;
     String eclipseLauncher;
     String publishDirectory;
+    private String productFile
     
     // optional plugin fields
     String pdeBuildPluginVersion;
@@ -63,12 +60,17 @@ public abstract class PdeConvention {
     String buildDirectory;
     String buildId = "BUILD_ID";
     
-    
-    public PdeConvention(Project project) {
-        this.project = project;
+    public void setType(String type){
+        this.type = BuildType.valueOf(type)
     }
     
-    public abstract BuildType getType();
+    public String getProductFile() {
+        return normPathForAnt(this.productFile);
+    }
+    
+    void setProductFile(String productFile){
+        this.productFile = productFile;
+    }
     
     public List<String> getExtLocations() {
         List<String> locations = new ArrayList<String>();
@@ -194,7 +196,16 @@ public abstract class PdeConvention {
     }
     
 
-    public abstract void printBuiltElements();
+    public void printBuiltElements(){
+        if(type == BuildType.feature){
+            println "Features                  : ";
+            for (String feat : features) {
+                println " -> " + feat;
+            }
+        } else{
+            println "Product File            : " + getProductFile();
+        }
+    }
     
     
     public void print() {

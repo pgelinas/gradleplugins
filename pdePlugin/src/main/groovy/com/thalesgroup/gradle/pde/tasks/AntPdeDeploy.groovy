@@ -23,17 +23,19 @@
 
 package com.thalesgroup.gradle.pde.tasks
 
+import org.gradle.api.internal.*;
+import org.gradle.api.tasks.*;
+
 import groovy.util.AntBuilder;
 
 import com.thalesgroup.gradle.pde.BuildType;
 import com.thalesgroup.gradle.pde.PdeConvention;
-import com.thalesgroup.gradle.pde.FeaturePdeConvention;
-import com.thalesgroup.gradle.pde.ProductPdeConvention;
 
-class AntPdeDeploy {
+class AntPdeDeploy  extends ConventionTask{
 
-    void execute(PdeConvention conv, AntBuilder ant) {
-
+    @TaskAction
+    void deploy() {
+        PdeConvention conv = project.pdeBuild;
         //delete the publish directory
         println "Deleting ${conv.getPublishDirectory()} file..."
         ant.delete(dir: conv.getPublishDirectory())

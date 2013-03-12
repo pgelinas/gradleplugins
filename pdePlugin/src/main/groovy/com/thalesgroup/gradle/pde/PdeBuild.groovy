@@ -28,9 +28,11 @@ import java.lang.reflect.Field
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+
+import com.thalesgroup.gradle.pde.tasks.*;
 import com.thalesgroup.gradle.pde.tasks.feature.*
 
-public class FeaturePdeBuild implements Plugin<Project> {
+public class PdeBuild implements Plugin<Project> {
 
     public static final String CLEAN_TASK_NAME = "pdeClean";
     public static final String INIT_TASK_NAME = "pdeInit";
@@ -40,8 +42,7 @@ public class FeaturePdeBuild implements Plugin<Project> {
 
 
     public void apply(final Project project) {
-        FeaturePdeConvention featurePdeConvention = new FeaturePdeConvention(project);
-        project.setProperty("FeaturePde", featurePdeConvention);
+        project.extensions.create("pdeBuild", PdeConvention)
         configureClean(project);
         configureInit(project);
         configureProcessResources(project);
@@ -50,42 +51,34 @@ public class FeaturePdeBuild implements Plugin<Project> {
     }
 
     private void configureClean(Project project) {
-        project.getTasks().add(CLEAN_TASK_NAME, CleanFeatureTask.class).setDescription("Deletes the build directory");
+        project.task(type: AntPdeClean, description:"Deletes the build directory", CLEAN_TASK_NAME)
     }
-
 
     private void configureInit(Project project) {
-        project.getTasks().add(INIT_TASK_NAME, InitFeatureTask.class).setDescription("Initializes the build directory and the target platform");
+        project.task(type: AntPdeInit,
+            description: "Initializes the build directory and the target platform",
+            INIT_TASK_NAME)
     }
-
 
     private void configureProcessResources(Project project) {
-        project.getTasks().withType(ResourceFeatureTask.class).all(new Action<ResourceFeatureTask>() {
-                    public void execute(ResourceFeatureTask task) {
-                        task.dependsOn(INIT_TASK_NAME);
-                    }
-                });
-        project.getTasks().add(PROCESS_RESOURCES_TASK_NAME, ResourceFeatureTask.class).setDescription("Processes PDE resources");
+        project.task(type: AntPdeResources,
+            dependsOn: INIT_TASK_NAME,
+            description: "Processes PDE resources",
+            PROCESS_RESOURCES_TASK_NAME)
     }
-
 
     private void configurePdeBuild(final Project project) {
-        project.getTasks().withType(PdeFeatureTask.class).all(new Action<PdeFeatureTask>() {
-                    public void execute(PdeFeatureTask pdeTask) {
-                        pdeTask.dependsOn(PROCESS_RESOURCES_TASK_NAME);
-                    }
-                });
-        project.getTasks().add(PDE_BUILD_TASK_NAME, PdeFeatureTask.class).setDescription("Launches the PDE build process");
+        project.task(type: AntPdeBuild,
+            dependsOn: PROCESS_RESOURCES_TASK_NAME,
+            description:"Launches the PDE build process",
+            PDE_BUILD_TASK_NAME)
     }
 
-
     private void configureDeploy(Project project) {
-        project.getTasks().withType(DeployFeatureTask.class).all(new Action<DeployFeatureTask>() {
-                    public void execute(DeployFeatureTask task) {
-                        task.dependsOn(PDE_BUILD_TASK_NAME);
-                    }
-                });
-        project.getTasks().add(UPLOAD_TASK_NAME, DeployFeatureTask.class).setDescription("Unzips artifacts produced by the PDE build into the publish directory");
+        project.task(type: AntPdeDeploy,
+            dependsOn: PDE_BUILD_TASK_NAME,
+            description: "Unzips artifacts produced by the PDE build into the publish directory",
+            UPLOAD_TASK_NAME)
     }
 }
 

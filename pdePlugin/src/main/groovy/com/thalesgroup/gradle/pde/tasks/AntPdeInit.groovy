@@ -25,18 +25,23 @@ package com.thalesgroup.gradle.pde.tasks
 
 import java.io.File;
 
+import org.gradle.api.internal.*;
+import org.gradle.api.tasks.*;
+
 import com.thalesgroup.gradle.pde.PdeConvention;
 
-class AntPdeInit {
-    
-    void execute(PdeConvention conv, AntBuilder ant) 
-    {
+class AntPdeInit extends ConventionTask {
+
+    @TaskAction
+    void init() {
+        PdeConvention conv = project.pdeBuild;
+        conv.print();
         if (conv.getUsePreviousLinks()) {
             //Create the destination links directory
             def destLinkDir = conv.getBaseLocation() + "/links"
             ant.delete(dir: destLinkDir, failonerror: false)
             ant.mkdir(dir: destLinkDir)
-            
+
             if (conv.getLinksSrcDirectory()) {
                 println "Fetching link files from ${conv.getLinksSrcDirectory()}..."
                 // Copy the temp links
@@ -62,7 +67,7 @@ class AntPdeInit {
                 conv.getFeaturesSrcDirList().each { fileset(dir: it) }
             }
         }
-        
+
         // Create the plugins directory and fill in
         def pluginsDir = conv.getBuildDirectory() + "/plugins"
         println "Fetching plugins..."
@@ -72,7 +77,7 @@ class AntPdeInit {
                 conv.getPluginsSrcDirList().each { fileset(dir: it) }
             }
         }
-        
+
         //Create the publish directory
         if (conv.getPublishDirectory()) {
             println "Creating the publication directory..."
@@ -80,6 +85,6 @@ class AntPdeInit {
         }
     }
 
-    
-    
+
+
 }

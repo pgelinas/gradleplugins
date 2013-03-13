@@ -15,10 +15,10 @@ apply plugin: "pdeBuild"
 ```
 
 # Configuration
-Configuration is done through the 'pde' extension and has a wide range of properties. Here is an overview of some of them:
+Configuration is done through the 'pdeBuild' extension and has a wide range of properties. Here is an overview of some of them:
 
 ```groovy
-pde {
+pdeBuild {
     // These are plugin specific properties
     // Drives which type of build is done; two possible value: feature of product
     type = "feature"
@@ -37,7 +37,8 @@ pde {
     equinoxLauncherPluginVersion = "1.0.201.R35x_v20090715"
     // here you can specify the PDE plugin version to use 
     pdeBuildPluginVersion = "3.5.1.R35x_20090820"
-    // NOTE: if you don"t specify versions for equinox and PDE, gradle will use non versioned plugins.
+    // NOTE: if you don"t specify versions for equinox and PDE, gradle will use non versioned plugins. 
+    // It is recommended to not specify plugin version when using a target platform definition file since this plugin can properly detect the version to use in this case.
 
     // The following are properties derived from PDE build; these drives the build environment. They are explained in-depth in the PDE build documentation.
     // The target platform to use to build the features (the $base folder MUST contain an "eclipse" folder if baseLocation isn't specified)
@@ -49,7 +50,7 @@ pde {
     // at the baseLocation. This requires the eclipseLauncher to be at least 3.8; 4.2 should be fine too.
     targetFile = "${rootDir}/../target/test.target"
 
-    // The working directtory. All plugins and features source code will be copied here
+    // The working directory. All plugins and features source code will be copied here
     buildDirectory = "${buildDir}/work"
 
     // The directory that contains the various build files, such as build.properties
@@ -67,11 +68,12 @@ pde {
 
 # Changelog
 * 8.0: Revamp of the project.
-** Migrated to gradle 1.3 minimum. Might work with earlier versions, not tested.
-** Removed duality product/feature, now only one plugin and switch between the two mode is done by configuration.
-** Eased configuration by following gradle's dsl features.
-** Reworked unversionned launcher and pde build: tries its best to detect proper jar and script dir. No extensive testing done, might not always work.
-** Lots of internal code cleanup.
+    * Migrated to gradle 1.3 minimum. Might work with earlier versions, not tested.
+    * Removed duality product/feature, now only one plugin and switch between the two mode is done by configuration.
+    * Eased configuration by following gradle's dsl features.
+    * Reworked unversionned launcher and pde build: tries its best to detect proper jar and script dir. No extensive testing done, might not always work.
+    * Target platform definition file now hanlded by PDE itself using the new pde.provisionTargetDefinition ant task.
+    * Lots of internal code cleanup.
 * 7.0.2: ant BuildException catching for avoiding ugly stack traces when the PDE build fails
 * 7.0.1: full refactoring, .link files generation, target platform cleaning, etc.
 * 6.8: use extLocations

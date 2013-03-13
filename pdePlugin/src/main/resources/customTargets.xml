@@ -63,7 +63,8 @@
 	<!-- ===================================================================== -->
 	<!-- Steps to do before setup -->
 	<!-- ===================================================================== -->
-	<target name="preSetup">
+	<target name="preSetup" if="targetFile">
+	  <pde.provisionTargetDefinition targetfile="${targetFile}" destinationdirectory="${baseLocation}"/>
 	</target>
 
 	<!-- ===================================================================== -->

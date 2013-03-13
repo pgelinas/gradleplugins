@@ -84,13 +84,15 @@ class AntPdeBuild extends ConventionTask {
             }
 
             //----------  Build the pluginPath
-            if (!usePreviousLinks && !extLocations.isEmpty() || !targetPaths.isEmpty()) {
-                def paths = extLocations + targetPaths
-
-                def pluginPath = paths.join(File.pathSeparator)
+            if (!usePreviousLinks && !extLocations.isEmpty()) {
+                def pluginPath = extLocations.join(File.pathSeparator)
                 args << "-DpluginPath=\"${pluginPath}\""
             }
 
+            if(targetFile){
+                args << "-DtargetFile=\"${targetFile}\""
+            }
+            
             //Built from the given property file
             //The properties are added at the end of the command line
             //The command line properties override the default properties from the file

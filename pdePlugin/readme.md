@@ -45,6 +45,10 @@ pde {
     base = "/usr/local"
     baseLocation = "${base}/eclipse" // This is the default value.
 
+    // The target platform definition file. This file is handled by PDE itself to generate the target platform 
+    // at the baseLocation. This requires the eclipseLauncher to be at least 3.8; 4.2 should be fine too.
+    targetFile = "${rootDir}/../target/test.target"
+
     // The working directtory. All plugins and features source code will be copied here
     buildDirectory = "${buildDir}/work"
 

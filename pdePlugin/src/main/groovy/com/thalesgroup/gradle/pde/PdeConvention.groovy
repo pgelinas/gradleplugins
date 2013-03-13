@@ -98,24 +98,6 @@ public class PdeConvention {
         return locations
     }
     
-    public List<String> getTargetPaths() {
-        List<String> paths = new ArrayList<String>();
-        
-        if (this.targetFile != null) {
-            def content = new File(this.targetFile).text
-            def target = new XmlSlurper().parseText(content)
-            def locs = target.locations.location
-            locs.each() {
-                def path = it.@path.text()
-                if (!new File(path).exists()) {
-                    throw new GradleException("ERROR in ${this.targetFile}: ${path} does not exist.")
-                }
-                paths << normPathForAnt(path)
-            }
-        }
-        return paths
-    }
-    
     public String getRcpCleaner() {
         if (rcpCleaner == null) {
             rcpCleaner = "R:/extloc/platform-3.3/rcpcleaner";
@@ -225,7 +207,6 @@ public class PdeConvention {
         } else {
             if (targetFile) {
                 println "Target Platform File    : ${targetFile}"
-                getTargetPaths().each { println " -> " + it }
             }
             if (extLocations) {
                 println "Extension Locations     : "

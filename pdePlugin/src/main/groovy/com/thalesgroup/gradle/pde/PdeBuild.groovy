@@ -21,33 +21,38 @@
  * THE SOFTWARE.                                                                *
  ****************************************************************************** */
 
-package com.thalesgroup.gradle.pde;
+package com.thalesgroup.gradle.pde
 
 
 import java.lang.reflect.Field
+import java.util.jar.Manifest
+
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.file.*;
+import org.gradle.api.tasks.Copy
 
-import com.thalesgroup.gradle.pde.tasks.*;
+import com.thalesgroup.gradle.pde.tasks.*
 import com.thalesgroup.gradle.pde.tasks.feature.*
 
 public class PdeBuild implements Plugin<Project> {
-
-    public static final String CLEAN_TASK_NAME = "pdeClean";
-    public static final String INIT_TASK_NAME = "pdeInit";
-    public static final String PROCESS_RESOURCES_TASK_NAME = "pdeProcessResources";
-    public static final String PDE_BUILD_TASK_NAME = "pdeBuild";
-    public static final String UPLOAD_TASK_NAME = "pdeUpload";
+    public static final String CLEAN_TASK_NAME = "pdeClean"
+    public static final String COPY_FEATURES_TASK_NAME = "pdeCopyFeatures"
+    public static final String COPY_PLUGINS_TASK_NAME = "pdeCopyPlugins"
+    public static final String INIT_TASK_NAME = "pdeInit"
+    public static final String PROCESS_RESOURCES_TASK_NAME = "pdeProcessResources"
+    public static final String PDE_BUILD_TASK_NAME = "pdeBuild"
+    public static final String UPLOAD_TASK_NAME = "pdeUpload"
 
 
     public void apply(final Project project) {
         project.extensions.create("pdeBuild", PdeConvention)
-        configureClean(project);
-        configureInit(project);
-        configureProcessResources(project);
-        configurePdeBuild(project);
-        configureDeploy(project);
+        configureClean(project)
+        configureInit(project)
+        configureProcessResources(project)
+        configurePdeBuild(project)
+        configureDeploy(project)
     }
 
     private void configureClean(Project project) {
@@ -55,8 +60,71 @@ public class PdeBuild implements Plugin<Project> {
     }
 
     private void configureInit(Project project) {
+        Map pathMappings = [:]
+        Closure modifyCopyPath = {FileCopyDetails details, Closure rootPath ->
+            def root = details.file
+            def relativePath = details.relativePath
+            for(def i = 1; i < relativePath.segments.length;i++){
+                root = root.parentFile
+            }
+            RelativePath newRootPath = pathMappings[root]
+            if(newRootPath == null){
+                newRootPath = rootPath(root)
+            }
+            def newSegments = relativePath.segments[1..<relativePath.segments.length]
+            def segments = newSegments.toArray(new String[newSegments.size()])
+            details.relativePath = newRootPath.append(true, segments)
+        }
+
+        project.task(type: Copy, description: "Copy the features to the build directory.", COPY_FEATURES_TASK_NAME){
+            PdeConvention conv = project.pdeBuild
+            // Some magic here: the parameter to Copy#from is evaluated as per Project#file, which states that a closure
+            // will be recursivly resolved. The resolving also happens during the action phase and not the configuration
+            // phase, at which point the pdeBuild convention has all the user-defined values.
+            from {conv.featuresSrcDirList}
+            into {"${conv.buildDirectory}/features"}
+            exclude "**/*.class"
+            eachFile { FileCopyDetails details ->
+                modifyCopyPath(details) { File root ->
+                    def featureXml = new File(root, "feature.xml")
+                    if(!featureXml.exists()) return
+                    def xml = new XmlSlurper().parse(featureXml)
+                    return new RelativePath(false, xml.@id.toString())
+                }
+            }
+        }
+
+        project.task(type: Copy, description: "Copy the plugins to the build directory.", COPY_PLUGINS_TASK_NAME){
+            Map pluginMapping = [:]
+            PdeConvention conv = project.pdeBuild
+            from {conv.pluginsSrcDirList}
+            into {"${conv.buildDirectory}/plugins"}
+            exclude "**/*.class"
+            eachFile { FileCopyDetails details ->
+                modifyCopyPath(details) { File root ->
+                    def manifestFile = new File(root, "META-INF/MANIFEST.MF")
+                    if(!manifestFile.exists()) return
+                        def fis = new FileInputStream(manifestFile)
+                    def manifest = new Manifest(new BufferedInputStream(fis))
+                    fis.close()
+                    def pluginName = manifest.getMainAttributes().getValue("Bundle-SymbolicName")
+                    int endName = pluginName.indexOf ';'
+                    endName = endName != -1 ? endName : pluginName.size()
+                    pluginName = pluginName[0..<endName]
+                    return new RelativePath(false, pluginName)
+                }
+            }
+        } << {
+            // Clean up after ourselves when this is not needed anymore.
+            pathMappings.clear()
+        }
+        
         project.task(type: AntPdeInit,
             description: "Initializes the build directory and the target platform",
+            dependsOn: [
+                COPY_FEATURES_TASK_NAME,
+                COPY_PLUGINS_TASK_NAME
+            ],
             INIT_TASK_NAME)
     }
 

@@ -58,25 +58,6 @@ class AntPdeInit extends ConventionTask {
                 }
             }
         }
-        // Create the features directory and fill in
-        def featuresDir = conv.getBuildDirectory() + "/features"
-        println "Fetching features..."
-        ant.mkdir(dir: featuresDir)
-        if (conv.getFeaturesSrcDirList()) {
-            ant.copy(todir: featuresDir) {
-                conv.getFeaturesSrcDirList().each { fileset(dir: it) }
-            }
-        }
-
-        // Create the plugins directory and fill in
-        def pluginsDir = conv.getBuildDirectory() + "/plugins"
-        println "Fetching plugins..."
-        ant.mkdir(dir: pluginsDir)
-        if (conv.getPluginsSrcDirList()) {
-            ant.copy(todir: pluginsDir) {
-                conv.getPluginsSrcDirList().each { fileset(dir: it) }
-            }
-        }
 
         //Create the publish directory
         if (conv.getPublishDirectory()) {

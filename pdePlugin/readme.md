@@ -73,6 +73,7 @@ pdeBuild {
     * Eased configuration by following gradle's dsl features.
     * Reworked unversionned launcher and pde build: tries its best to detect proper jar and script dir. No extensive testing done, might not always work.
     * Target platform definition file now hanlded by PDE itself using the new pde.provisionTargetDefinition ant task.
+    * Reworked how the sources are copied to the build dir: it's now a copy task available from the script to configure as you wish.
     * Lots of internal code cleanup.
 * 7.0.2: ant BuildException catching for avoiding ugly stack traces when the PDE build fails
 * 7.0.1: full refactoring, .link files generation, target platform cleaning, etc.

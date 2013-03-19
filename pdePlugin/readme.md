@@ -15,7 +15,7 @@ apply plugin: "pdeBuild"
 ```
 
 # Configuration
-Configuration is done through the 'pdeBuild' extension and has a wide range of properties. Here is an overview of some of them:
+Configuration is done through the 'pdeBuild' extension and has a wide range of properties. Here is an overview:
 
 ```groovy
 pdeBuild {
@@ -65,9 +65,15 @@ pdeBuild {
     // ID of the build.  Used in naming the build output.
     buildId = "BUILD_ID" // This is the default
 
-    // These properties are key-value pair that are passed to the runtime via the -D parameter.
-    // If the key is a property that is in the build.properties file, the value of the file will be overwritten.
-    additionalProperties = ["javacSource" : "1.6", "javacTarget", "1.6"] // The default for these value is 1.5, so you can override it here.
+    // These properties are PDE Build properties (ie, build.properties) not specifically handled by gradle. 
+    // They are key-value pair defined via the ExtraPropertiesExtension that are passed to the runtime via the -D parameter.
+    // Note: the presented values are the default.
+    ext {
+        javacSource = "1.5"
+        set("p2.gathering", false)
+    }
+    ext.javacTarget = "1.5"
+    ext["p2.gathering"] = false
 }
 
 // An example of configuration of the copy task
@@ -93,6 +99,7 @@ The two tasks responsible for this are `pdeCopyFeatures` and `pdeCopyPlugins`; t
     * Reworked unversionned launcher and pde build: tries its best to detect proper jar and script dir.
     * Target platform definition file now hanlded by PDE itself using the new pde.provisionTargetDefinition ant task.
     * Reworked how the sources are copied to the build dir: it's now a copy task available from the script to configure as you wish.
+    * Replaced 'additionalProperties' in favor of ExtraPropertiesExtension mechanism.
     * Lots of internal code cleanup.
 * 7.0.2: ant BuildException catching for avoiding ugly stack traces when the PDE build fails
 * 7.0.1: full refactoring, .link files generation, target platform cleaning, etc.

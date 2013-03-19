@@ -23,49 +23,97 @@
 
 package com.thalesgroup.gradle.pde.tasks
 
-import java.io.File;
+import java.io.File
 
-import org.gradle.api.internal.*;
-import org.gradle.api.tasks.*;
+import org.gradle.api.internal.*
+import org.gradle.api.plugins.*
+import org.gradle.api.tasks.*
 
-import com.thalesgroup.gradle.pde.PdeConvention;
+import com.google.common.base.*;
+import com.thalesgroup.gradle.pde.PdeConvention
+import com.thalesgroup.gradle.pde.BuildType
 
 class AntPdeInit extends ConventionTask {
 
     @TaskAction
     void init() {
-        PdeConvention conv = project.pdeBuild;
-        conv.print();
-        if (conv.getUsePreviousLinks()) {
-            //Create the destination links directory
-            def destLinkDir = conv.getBaseLocation() + "/links"
-            ant.delete(dir: destLinkDir, failonerror: false)
-            ant.mkdir(dir: destLinkDir)
+        printConfig(project.pdeBuild)
+        project.pdeBuild.with {
+            if (usePreviousLinks) {
+                //Create the destination links directory
+                def destLinkDir = baseLocation + "/links"
+                project.delete(destLinkDir)
+                project.mkdir(destLinkDir);
 
-            if (conv.getLinksSrcDirectory()) {
-                println "Fetching link files from ${conv.getLinksSrcDirectory()}..."
-                // Copy the temp links
-                ant.copy(todir: destLinkDir) {
-                    fileset(dir: conv.getLinksSrcDirectory()) { include(name: '*.link') }
-                }
-            } else if (conv.getExtLocations()) {
-                println "Generating link files..."
-                for (String extLoc : conv.getExtLocations()) {
-                    def linkFileName = extLoc.replaceAll("[\\\\/:]", "_")
-                    linkFileName = destLinkDir + "/${linkFileName}.link"
-                    ant.echo(message: "path=${extLoc}", file: linkFileName)
-                    println " -> generated " + linkFileName
+                if (linksSrcDirectory) {
+                    println "Fetching link files from ${linksSrcDirectory}..."
+                    // Copy the temp links
+                    project.copy {
+                        fileset(dir: project.pdeBuild.linksSrcDirectory) { include(name: '*.link') }
+                    }
+                } else if (extLocations) {
+                    println "Generating link files..."
+                    for (String extLoc : extLocations) {
+                        def linkFileName = extLoc.replaceAll("[\\\\/:]", "_")
+                        linkFileName = destLinkDir + "/${linkFileName}.link"
+                        new File(linkFileName).write("path=${extLoc}")
+                        println " -> generated " + linkFileName
+                    }
                 }
             }
-        }
 
-        //Create the publish directory
-        if (conv.getPublishDirectory()) {
-            println "Creating the publication directory..."
-            ant.mkdir(dir: conv.getPublishDirectory())
+            //Create the publish directory
+            if (publishDirectory) {
+                println "Creating the publication directory..."
+                project.mkdir(publishDirectory)
+            }
         }
     }
 
+    private void printConfig(PdeConvention pdeBuild){
+        pdeBuild.with{
+            println "===================================================="
+            println "*                PDE PARAMETERS                    *"
+            println "===================================================="
+            if(type == BuildType.feature){
+                println "Features                : "
+                for (String feat : features) {
+                    println "  -> " + feat
+                }
+            } else{
+                println "Product File            : " + getProductFile()
+            }
+            println "Build directory         : " + Strings.nullToEmpty(buildDirectory)
+            println "Launcher Path           : " + Strings.nullToEmpty(eclipseLauncher)
+            println "Launcher Plugin Version : " + Strings.nullToEmpty(equinoxLauncherPluginVersion)
+            println "PDE Plugin Version      : " + Strings.nullToEmpty(pdeBuildPluginVersion)
+            println "Eclipse workspace       : " + Strings.nullToEmpty(data)
+            println "Target Platform         : " + Strings.nullToEmpty(base)
 
+            if (linksSrcDirectory) {
+                println "Link files directory    : " + linksSrcDirectory
+            } else {
+                if (targetFile) {
+                    println "Target Platform File    : ${targetFile}"
+                }
+                if (extLocations) {
+                    println "Extension Locations     : "
+                    extLocations.each { println " -> " + it }
+                }
+            }
 
+            println "JVM Options             : " + Strings.nullToEmpty(jvmOptions)
+            println "Publish directory       : " + Strings.nullToEmpty(publishDirectory)
+
+            // ExtraPropertiesExtension, these are added by gradle when the PdeConvention object is registered as an extension.
+            if (!ext.properties.isEmpty()) {
+                println "----- Additional parameters -----"
+                for (Map.Entry<String, String> entry: ext.properties.entrySet()) {
+                    println "  -> " + entry.getKey() + " = " + entry.getValue()
+                }
+            }
+            println "===================================================="
+        }
+    }
+    
 }

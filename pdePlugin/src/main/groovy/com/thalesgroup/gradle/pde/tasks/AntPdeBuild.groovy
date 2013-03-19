@@ -96,8 +96,8 @@ class AntPdeBuild extends ConventionTask {
             //Built from the given property file
             //The properties are added at the end of the command line
             //The command line properties override the default properties from the file
-            if (additionalProperties != null && !additionalProperties.isEmpty()) {
-                additionalProperties.entrySet().each { args << "-D${it.key}=\"${it.value}\"" }
+            if (!ext.properties.isEmpty()) {
+                ext.properties.entrySet().each { args << "-D${it.key}=\"${it.value}\"" }
             }
 
             //-- Data directory

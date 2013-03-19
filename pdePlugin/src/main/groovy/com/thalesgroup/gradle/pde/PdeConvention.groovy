@@ -37,7 +37,7 @@ public class PdeConvention {
     List<String> featuresSrcDirList;
     String eclipseLauncher;
     String publishDirectory;
-    private String productFile
+    String productFile
     
     // optional plugin fields
     String pdeBuildPluginVersion;
@@ -45,7 +45,6 @@ public class PdeConvention {
     Boolean usePreviousLinks = false;
     List<String> extLocations;
     String linksSrcDirectory;
-    Map additionalProperties = new HashMap<String, Object>();
     String buildPropertiesFile;
     String rcpCleaner = rcpCleaner;
     String eclipseExtensionsRoot = eclipseExtensionsRoot;
@@ -105,36 +104,23 @@ public class PdeConvention {
         return rcpCleaner;
     }
     
-    
-    public String getBuildPropertiesFile() {
-        return buildPropertiesFile
-    }
-    
     public String getBase() {
         return normPathForAnt(base)
     }
     
     public String getBaseLocation() {
-        if (additionalProperties.get("baseLocation")) {
-            baseLocation = additionalProperties.get("baseLocation")
-            additionalProperties.remove("baseLocation")
-        } else if (baseLocation == null) {
+        if (baseLocation == null) {
             baseLocation = base + "/eclipse"
         }
         return normPathForAnt(baseLocation)
     }
     
-    
     public String getBuilderDir() {
-        if (additionalProperties.get("builderDir")) {
-            builderDir = additionalProperties.get("builderDir");
-            additionalProperties.remove("builderDir")
-        } else if (builderDir == null) {
+        if (builderDir == null) {
             builderDir = buildDirectory + "/builder"
         }
         return normPathForAnt(builderDir)
     }
-    
     
     public String getBuildDirectory() {
         return normPathForAnt(buildDirectory)
@@ -159,16 +145,6 @@ public class PdeConvention {
         }
     }
     
-    public String getBuildId() {
-        if (additionalProperties.get("buildId")) {
-            buildId = additionalProperties.get("buildId");
-            additionalProperties.remove("buildId")
-        }
-        return buildId
-    }
-    
-    
-    
     public String getLinksSrcDirectory() {
         return normPathForAnt(linksSrcDirectory)
     }
@@ -176,56 +152,6 @@ public class PdeConvention {
     public String getPublishDirectory() {
         return normPathForAnt(publishDirectory)
     }
-    
-
-    public void printBuiltElements(){
-        if(type == BuildType.feature){
-            println "Features                  : ";
-            for (String feat : features) {
-                println " -> " + feat;
-            }
-        } else{
-            println "Product File            : " + getProductFile();
-        }
-    }
-    
-    
-    public void print() {
-        println "===================================================="
-        println "*                PDE PARAMETERS                    *"
-        println "===================================================="
-        printBuiltElements();
-        println "Build directory         : " + (getBuildDirectory() == null ? "" : getBuildDirectory());
-        println "Launcher Path           : " + (getEclipseLauncher() == null ? "" : getEclipseLauncher());
-        println "Launcher Plugin Version : " + (equinoxLauncherPluginVersion == null ? "" : equinoxLauncherPluginVersion);
-        println "PDE Plugin Version      : " + (pdeBuildPluginVersion == null ? "" : pdeBuildPluginVersion);
-        println "Eclipse workspace       : " + (getData() == null ? "" : getData());
-        println "Target Platform         : " + (getBase() == null ? "" : getBase());
-        
-        if (linksSrcDirectory) {
-            println "Link files directory    : " + getLinksSrcDirectory();
-        } else {
-            if (targetFile) {
-                println "Target Platform File    : ${targetFile}"
-            }
-            if (extLocations) {
-                println "Extension Locations     : "
-                getExtLocations().each { println " -> " + it }
-            }
-        }
-        
-        println "JVM Options             : " + (jvmOptions == null ? "" : jvmOptions);
-        println "Publish directory       : " + (getPublishDirectory() == null ? "" : getPublishDirectory());
-        
-        if (additionalProperties != null && !additionalProperties.values().isEmpty()) {
-            println "----- Additional parameters -----"
-            for (Map.Entry<String, String> entry: additionalProperties.entrySet()) {
-                println " -> " + entry.getKey() + " = " + entry.getValue();
-            }
-        }
-        println "===================================================="
-    }
-    
     
     public static String normPathForAnt(String path) {
         if (path == null) {

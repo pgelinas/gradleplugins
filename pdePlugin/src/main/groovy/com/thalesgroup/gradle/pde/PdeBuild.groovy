@@ -23,18 +23,14 @@
 
 package com.thalesgroup.gradle.pde
 
-
-import java.lang.reflect.Field
 import java.util.jar.Manifest
 
-import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.*;
 import org.gradle.api.tasks.Copy
 
 import com.thalesgroup.gradle.pde.tasks.*
-import com.thalesgroup.gradle.pde.tasks.feature.*
 
 public class PdeBuild implements Plugin<Project> {
     public static final String CLEAN_TASK_NAME = "pdeClean"

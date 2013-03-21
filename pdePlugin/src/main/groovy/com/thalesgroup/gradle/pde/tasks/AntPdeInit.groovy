@@ -29,7 +29,7 @@ import org.gradle.api.internal.*
 import org.gradle.api.plugins.*
 import org.gradle.api.tasks.*
 
-import com.google.common.base.*;
+import com.google.common.base.Strings;
 import com.thalesgroup.gradle.pde.PdeConvention
 import com.thalesgroup.gradle.pde.BuildType
 
@@ -37,8 +37,9 @@ class AntPdeInit extends ConventionTask {
 
     @TaskAction
     void init() {
-        printConfig(project.pdeBuild)
-        project.pdeBuild.with {
+        PdeConvention pdeBuild = project.pdeBuild
+        printConfig(pdeBuild)
+        pdeBuild.with {
             if (usePreviousLinks) {
                 //Create the destination links directory
                 def destLinkDir = baseLocation + "/links"
@@ -49,7 +50,7 @@ class AntPdeInit extends ConventionTask {
                     println "Fetching link files from ${linksSrcDirectory}..."
                     // Copy the temp links
                     project.copy {
-                        fileset(dir: project.pdeBuild.linksSrcDirectory) { include(name: '*.link') }
+                        fileset(dir: pdeBuild.linksSrcDirectory) { include(name: '*.link') }
                     }
                 } else if (extLocations) {
                     println "Generating link files..."

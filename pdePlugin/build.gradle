@@ -21,6 +21,7 @@ dependencies {
     deployerJars "org.apache.maven.wagon:wagon-http:1.0-beta-2"
     groovy localGroovy()
     compile gradleApi()
+    compile "com.google.guava:guava:11.0.2"
 }
 
 uploadArchives {

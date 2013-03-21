@@ -38,29 +38,28 @@ class AntPdeClean extends ConventionTask {
         PdeConvention conv = project.pdeBuild;
         println "Deleting the build directory..."
         //delete the working directory
-        ant.delete(dir: conv.getBuildDirectory());
+        project.delete(conv.buildDirectory);
         
         println "Creating the build directory..."
-        ant.mkdir(dir: conv.getBuildDirectory())
+        project.mkdir(conv.buildDirectory)
         
         println "Creating the pde eclipse workspace..."
-        ant.mkdir(dir: conv.getData())
+        project.mkdir(conv.data)
         
-        if (conv.getUsePreviousLinks()) {
-            def destLinkDir = new File(conv.getBaseLocation(), "links");
+        if (conv.usePreviousLinks) {
+            def destLinkDir = new File(conv.baseLocation, "links")
             
             println "Deleting old link files..."
-            ant.delete(dir: destLinkDir);
-            ant.mkdir(dir: destLinkDir);
+            project.delete(destLinkDir)
+            project.mkdir(destLinkDir)
             
-            def rcpcleaner = "R:/extloc/platform-3.3/rcpcleaner";
-            ant.echo(message: "path=${rcpcleaner}", file: "${destLinkDir}/org.thalesgroup.rcpcleaner.link");
+            def rcpcleaner = "R:/extloc/platform-3.3/rcpcleaner"
+            new File("${destLinkDir}/org.thalesgroup.rcpcleaner.link").write("path=${rcpcleaner}")
             
             try {
-                new CleanTargetPlatformAction(ant, conv.getBaseLocation(), conv.getBuildDirectory(), 
-                        conv.getData()).clean();
+                new CleanTargetPlatformAction(ant, conv.baseLocation, conv.buildDirectory, conv.data).clean()
             } catch (FileNotFoundException e) {
-                println "WARNING! Target Platform could not be cleaned. " + e.toString();
+                logger.warn "Target Platform could not be cleaned. ", e
             }
         }
     }

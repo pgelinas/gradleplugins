@@ -63,10 +63,15 @@ public class PdeBuild implements Plugin<Project> {
             for(def i = 1; i < relativePath.segments.length;i++){
                 root = root.parentFile
             }
-            RelativePath newRootPath = pathMappings[root]
+            def newRootPath = pathMappings[root]
             if(newRootPath == null){
                 newRootPath = rootPath(root)
-            }
+                pathMappings[root] = newRootPath 
+                if(newRootPath == null){
+                    pathMappings[root] = -1
+                    return
+                }
+            } else if(newRootPath == -1) return
             def newSegments = relativePath.segments[1..<relativePath.segments.length]
             def segments = newSegments.toArray(new String[newSegments.size()])
             details.relativePath = newRootPath.append(true, segments)
@@ -74,6 +79,7 @@ public class PdeBuild implements Plugin<Project> {
 
         project.task(type: Copy, description: "Copy the features to the build directory.", COPY_FEATURES_TASK_NAME){
             PdeConvention conv = project.pdeBuild
+            includeEmptyDirs = false
             // Some magic here: the parameter to Copy#from is evaluated as per Project#file, which states that a closure
             // will be recursivly resolved. The resolving also happens during the action phase and not the configuration
             // phase, at which point the pdeBuild convention has all the user-defined values.
@@ -83,7 +89,10 @@ public class PdeBuild implements Plugin<Project> {
             eachFile { FileCopyDetails details ->
                 modifyCopyPath(details) { File root ->
                     def featureXml = new File(root, "feature.xml")
-                    if(!featureXml.exists()) return
+                    if(!featureXml.exists()){
+                        project.logger.warn "${root} doesn't contain a feature, perhaps you should exclude it?"
+                        return null
+                    }
                     def xml = new XmlSlurper().parse(featureXml)
                     return new RelativePath(false, xml.@id.toString())
                 }
@@ -91,7 +100,7 @@ public class PdeBuild implements Plugin<Project> {
         }
 
         project.task(type: Copy, description: "Copy the plugins to the build directory.", COPY_PLUGINS_TASK_NAME){
-            Map pluginMapping = [:]
+            includeEmptyDirs = false
             PdeConvention conv = project.pdeBuild
             from {conv.pluginsSrcDirList}
             into {"${conv.buildDirectory}/plugins"}
@@ -99,7 +108,10 @@ public class PdeBuild implements Plugin<Project> {
             eachFile { FileCopyDetails details ->
                 modifyCopyPath(details) { File root ->
                     def manifestFile = new File(root, "META-INF/MANIFEST.MF")
-                    if(!manifestFile.exists()) return
+                    if(!manifestFile.exists()){
+                        project.logger.warn "${root} doesn't contain a plugin, perhaps you should exclude it?"
+                         return null
+                    }
                         def fis = new FileInputStream(manifestFile)
                     def manifest = new Manifest(new BufferedInputStream(fis))
                     fis.close()
@@ -110,9 +122,6 @@ public class PdeBuild implements Plugin<Project> {
                     return new RelativePath(false, pluginName)
                 }
             }
-        } << {
-            // Clean up after ourselves when this is not needed anymore.
-            pathMappings.clear()
         }
         
         project.task(type: AntPdeInit,
@@ -121,7 +130,10 @@ public class PdeBuild implements Plugin<Project> {
                 COPY_FEATURES_TASK_NAME,
                 COPY_PLUGINS_TASK_NAME
             ],
-            INIT_TASK_NAME)
+            INIT_TASK_NAME)  << {
+                // Clean up after ourselves when this is not needed anymore.
+                pathMappings.clear()
+            }
     }
 
     private void configureProcessResources(Project project) {

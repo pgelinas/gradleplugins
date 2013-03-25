@@ -33,8 +33,6 @@ public class PdeConvention {
     // mandatory plugin fields
     String[] features;
     BuildType type;
-    List<String> pluginsSrcDirList;
-    List<String> featuresSrcDirList;
     String eclipseLauncher;
     String publishDirectory;
     String productFile

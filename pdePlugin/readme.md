@@ -29,13 +29,8 @@ pdeBuild {
     // Otherwise, during a product build you need to provide a product file.
     productFile = "path/to/file.product"
 
-    // The list of directories containing features. These will be copied to ${buildDirectory}/features.
-    featuresSrcDirList = ["features"]
-    // The list of directories containing plugins. These will be copied to ${buildDirectory}/plugins.
-    pluginsSrcDirList = ["plugins"]
-
     // The eclipse runtime that will execute the build.
-    // This location must contain a plugins folder with the PDE plugin in it
+    // This location must contain a plugins directory with the PDE plugin in it
     eclipseLauncher = "/usr/local/eclipse"
 
     // equinox eclipse launcher to use for launching the org.eclipse.ant.core.antRunner application
@@ -47,7 +42,7 @@ pdeBuild {
     // since this plugin can properly detect the version to use in this case.
 
     // The following are properties derived from PDE build; these drives the build environment. They are explained in-depth in the PDE build documentation.
-    // The target platform to use to build the features (the 'base' folder MUST contain an "eclipse" folder if 'baseLocation' isn't specified)
+    // The target platform to use to build the features (the 'base' directory MUST contain an "eclipse" directory if 'baseLocation' isn't specified)
     // Can be the same eclipse runtime as 'eclipseLauncher' or a different one, doesn't matter. 
     base = "/usr/local"
     baseLocation = "${base}/eclipse" // This is the default value.
@@ -76,20 +71,29 @@ pdeBuild {
     ext["p2.gathering"] = false
 }
 
-// An example of configuration of the copy task
+// An example of configuration of the plugin copy task
 pdeCopyPlugins {
-    exclude("**/*.class") // This is part of the default configuration.
-    exclude("somePlugin")
+    from "plugins"
+    exclude "somePlugin"
+    exclude "**/*.class" // This is part of the default configuration.
+    into {"${buildDirectory}/plugins"} // This is the default and should not be changed
+}
+
+// An example of configuration of the feature copy task
+pdeCopyFeatures {
+    from "features"
+    exclude "someFeature"
+    into {"${buildDirectory}/features"} // This is the default and should not be changed
 }
 
 
 ```
 # Sources
-PDE build requires a rigid directory structure to work. The `buildDirectory` must have two sub-directory, "features" and "plugins" in which the source to build resides. This project will copy the feature source from `featuresSrcDirList` into the "features" directory under a directory with its feature ID. For example, a feature named "org.gradle.feature.example" will be copied to `${buildDirectory}/features/org.gradle.feature.example`, whatever its source directory name is. The same applies to plugins: the sources in `pluginsSrcDirList` are copied to the "plugins" directory in a sub-directory named with the plugin ID. 
+PDE build requires a rigid directory structure to work. The `buildDirectory` must have two sub-directory, "features" and "plugins" in which the source to build resides. This project will copy the feature specified in the `pdeCopyFeatures` into the "features" directory under a directory with its feature ID. For example, a feature named "org.gradle.feature.example" will be copied to `${buildDirectory}/features/org.gradle.feature.example`, whatever its source directory name is. The same applies to plugins: the sources specified in the `pdeCopyPlugins` are copied to the "plugins" directory in a sub-directory named with the plugin ID. For this to properly work, the plugin or feature directories MUST be directly under the source directory specified in the `from` directive and the file META-INF/MANIFEST.MF or feature.xml MUST exist, otherwise it won't be detected as a bundle.
 
-This behavior is there for two reasons; first, the directories in the "features" directory MUST have the feature ID as its name because of some PDE requirement. Second, it is to avoid directory name clash, since it is possible to copy from disparate source directories. For example, two directories, "plugins" and "api", are in the `pluginsSrcDirList`, and both have a sub-directory named "example", containing different plugins, say "org.gradle.plugin.example" and "org.gradle.api.example". This enables to have the two plugins in the build environment in two distinct directories.
+This behavior is there for two reasons; first, the directories in the "features" directory MUST have the feature ID as its name because of some PDE requirement. Second, it is to avoid directory name clash, since it is possible to copy from disparate source directories. For example, two directories, "plugins" and "api", are configured for `pdeCopyPlugins`, and both have a sub-directory named "example", containing different plugins, say "org.gradle.plugin.example" and "org.gradle.api.example". This enables to have the two plugins in the build environment in two distinct directories.
 
-The two tasks responsible for this are `pdeCopyFeatures` and `pdeCopyPlugins`; these are standard gradle copy tasks which can be customized.
+The two tasks `pdeCopyFeatures` and `pdeCopyPlugins` are standard gradle copy tasks which can be customized; see the [Gradle Doc](http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.Copy.html) for details.
 
 # Changelog
 * 8.0: Revamp of the project.

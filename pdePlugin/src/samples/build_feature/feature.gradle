@@ -6,12 +6,24 @@ buildscript {
 		flatDir(dirs: "../../../build/libs")
 	} 
     dependencies {
-        classpath ":pdePlugin:8.+" 
+        classpath ":pdePlugin:8.+"
+        classpath gradleApi() // Provides Guava!
     }
+}
+
+// Configure the copy task for features
+pdeCopyFeatures {
+    from "features"
+}
+
+// Configure the copy task for plugins
+pdeCopyPlugins {
+    from "plugins"
 }
 
 pdeBuild {	
     type = "feature"
+    
     /* the working directory
      * all plugins and features source code will be fetched here */
     buildDirectory = "${buildDir}/pdeBuild"
@@ -19,15 +31,9 @@ pdeBuild {
     /* all artifacts produced by the PDE build will be unziped here */
     publishDirectory = "${buildDirectory}/publish"
     
-    /* enter here all the feature ids that you want to build.
-     * the Feature directory name must match the feature ID in feature.xml */
-    features = ["com.thalesgroup.feature.example"]
+    /* enter here all the feature ids that you want to build. */
+    features = ["org.gradle.feature.example", "org.gradle.feature.example2"]
     
-    /* the list of directories containing plugins */
-    pluginsSrcDirList = ["plugins"]
-    /* the list of directories containing features */
-    featuresSrcDirList = ["features"]
-
     /* timestamp for the build artifacts. this will also be the name of the 
      * output folder for all archives that the build will produce. */
 //    buildId = "20101124-0845"
@@ -70,10 +76,9 @@ pdeBuild {
      * the arguments will have the form : -Dkey=value */
     ext {
         javacSource = "1.5"
-        set("p2.gathering", false)
+        javacTarget = "1.5"
+        set("p2.gathering", true)
     }
-    ext.javacTarget = "1.5"
-    ext["p2.gathering"] = false
 
     /* custom build.properties file to use instead of the embedded one */
     //buildPropertiesFile ="mybuild.properties"

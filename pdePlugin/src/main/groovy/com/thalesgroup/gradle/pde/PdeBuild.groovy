@@ -80,10 +80,9 @@ public class PdeBuild implements Plugin<Project> {
         project.task(type: Copy, description: "Copy the features to the build directory.", COPY_FEATURES_TASK_NAME){
             PdeConvention conv = project.pdeBuild
             includeEmptyDirs = false
-            // Some magic here: the parameter to Copy#from is evaluated as per Project#file, which states that a closure
+            // Some magic here: the parameter to Copy#into is evaluated as per Project#file, which states that a closure
             // will be recursivly resolved. The resolving also happens during the action phase and not the configuration
             // phase, at which point the pdeBuild convention has all the user-defined values.
-            from {conv.featuresSrcDirList}
             into {"${conv.buildDirectory}/features"}
             exclude "**/*.class"
             eachFile { FileCopyDetails details ->
@@ -102,7 +101,6 @@ public class PdeBuild implements Plugin<Project> {
         project.task(type: Copy, description: "Copy the plugins to the build directory.", COPY_PLUGINS_TASK_NAME){
             includeEmptyDirs = false
             PdeConvention conv = project.pdeBuild
-            from {conv.pluginsSrcDirList}
             into {"${conv.buildDirectory}/plugins"}
             exclude "**/*.class"
             eachFile { FileCopyDetails details ->

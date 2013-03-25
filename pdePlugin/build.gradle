@@ -51,6 +51,12 @@ uploadArchives {
                             role('Project developer')
                         }
                     }
+                    developer {
+                        id('pgelinas')
+                        roles {
+                            role('Project developer')
+                        }
+                    }
                 }
             }
         }

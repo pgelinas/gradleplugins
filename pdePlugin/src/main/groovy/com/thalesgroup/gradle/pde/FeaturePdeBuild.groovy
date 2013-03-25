@@ -31,14 +31,14 @@ import org.gradle.api.Project
 import com.thalesgroup.gradle.pde.tasks.feature.*
 
 public class FeaturePdeBuild implements Plugin<Project> {
-    
+
     public static final String CLEAN_TASK_NAME = "pdeClean";
     public static final String INIT_TASK_NAME = "pdeInit";
     public static final String PROCESS_RESOURCES_TASK_NAME = "pdeProcessResources";
     public static final String PDE_BUILD_TASK_NAME = "pdeBuild";
     public static final String UPLOAD_TASK_NAME = "pdeUpload";
-    
-    
+
+
     public void apply(final Project project) {
         FeaturePdeConvention featurePdeConvention = new FeaturePdeConvention(project);
         project.setProperty("FeaturePde", featurePdeConvention);
@@ -48,39 +48,39 @@ public class FeaturePdeBuild implements Plugin<Project> {
         configurePdeBuild(project);
         configureDeploy(project);
     }
-    
+
     private void configureClean(Project project) {
         project.getTasks().add(CLEAN_TASK_NAME, CleanFeatureTask.class).setDescription("Deletes the build directory");
     }
-    
-    
+
+
     private void configureInit(Project project) {
         project.getTasks().add(INIT_TASK_NAME, InitFeatureTask.class).setDescription("Initializes the build directory and the target platform");
     }
-    
-    
+
+
     private void configureProcessResources(Project project) {
-        project.getTasks().withType(ResourceFeatureTask.class).allTasks(new Action<ResourceFeatureTask>() {
+        project.getTasks().withType(ResourceFeatureTask.class).all(new Action<ResourceFeatureTask>() {
                     public void execute(ResourceFeatureTask task) {
                         task.dependsOn(INIT_TASK_NAME);
                     }
                 });
         project.getTasks().add(PROCESS_RESOURCES_TASK_NAME, ResourceFeatureTask.class).setDescription("Processes PDE resources");
     }
-    
-    
+
+
     private void configurePdeBuild(final Project project) {
-        project.getTasks().withType(PdeFeatureTask.class).allTasks(new Action<PdeFeatureTask>() {
+        project.getTasks().withType(PdeFeatureTask.class).all(new Action<PdeFeatureTask>() {
                     public void execute(PdeFeatureTask pdeTask) {
                         pdeTask.dependsOn(PROCESS_RESOURCES_TASK_NAME);
                     }
                 });
         project.getTasks().add(PDE_BUILD_TASK_NAME, PdeFeatureTask.class).setDescription("Launches the PDE build process");
     }
-    
-    
+
+
     private void configureDeploy(Project project) {
-        project.getTasks().withType(DeployFeatureTask.class).allTasks(new Action<DeployFeatureTask>() {
+        project.getTasks().withType(DeployFeatureTask.class).all(new Action<DeployFeatureTask>() {
                     public void execute(DeployFeatureTask task) {
                         task.dependsOn(PDE_BUILD_TASK_NAME);
                     }

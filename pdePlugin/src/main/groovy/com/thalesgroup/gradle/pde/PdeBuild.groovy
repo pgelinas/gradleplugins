@@ -43,7 +43,12 @@ public class PdeBuild implements Plugin<Project> {
 
 
     public void apply(final Project project) {
-        project.extensions.create("pdeBuild", PdeConvention)
+        PdeConvention conv = project.extensions.create("pdeBuild", PdeConvention)
+        conv.with {
+            buildDirectory = "${project.buildDir}/pdeBuild"
+            publishDirectory = "${buildDirectory}/publish"
+            base = "${buildDirectory}/base"
+        }
         configureClean(project)
         configureInit(project)
         configureProcessResources(project)

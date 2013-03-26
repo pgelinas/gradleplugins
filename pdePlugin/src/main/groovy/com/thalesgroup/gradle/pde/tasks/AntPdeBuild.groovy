@@ -43,12 +43,12 @@ class AntPdeBuild extends ConventionTask {
             args << jvmOptions
 
             if (equinoxLauncherPluginVersion) {
-                args << "-jar \"${eclipseLauncher}/plugins/org.eclipse.equinox.launcher_${equinoxLauncherPluginVersion}.jar\""
+                args << "-jar \"$eclipseLauncher/plugins/org.eclipse.equinox.launcher_$equinoxLauncherPluginVersion.jar\""
             } else {
                 println "No launcher jar version supplied, automatically resolving which jar to use."
                 String launcherJar = EclipseUtils.resolveEquinoxLauncherJarFile(eclipseLauncher)
-                println "Found ${launcherJar}"
-                args << "-jar \"${launcherJar}\""
+                println "Found $launcherJar"
+                args << "-jar \"$launcherJar\""
             }
 
             args << "-application org.eclipse.ant.core.antRunner"
@@ -56,57 +56,57 @@ class AntPdeBuild extends ConventionTask {
             def scriptsDir
 
             if (getPdeBuildPluginVersion()) {
-                scriptsDir = "${eclipseLauncher}/plugins/org.eclipse.pde.build_${pdeBuildPluginVersion}/scripts"
+                scriptsDir = "$eclipseLauncher/plugins/org.eclipse.pde.build_$pdeBuildPluginVersion/scripts"
             } else {
                 println "No pde build plugin version supplied, automatically resolving the script dir."
                 scriptsDir = resolveScriptDir(eclipseLauncher)
-                println "Found ${scriptsDir}"
+                println "Found $scriptsDir"
             }
 
             if (type == BuildType.product) {
-                args << "-buildfile \"${scriptsDir}/productBuild/productBuild.xml\""
+                args << "-buildfile \"$scriptsDir/productBuild/productBuild.xml\""
             } else {
-                args << "-buildfile \"${scriptsDir}/build.xml\""
+                args << "-buildfile \"$scriptsDir/build.xml\""
             }
 
-            args << "-DbuildDirectory=\"${buildDirectory}\""
-            args << "-Dbuilder=\"${builderDir}\""
+            args << "-DbuildDirectory=\"$buildDirectory\""
+            args << "-Dbuilder=\"$builderDir\""
 
-            args << "-Dbase=\"${base}\""
-            args << "-DbaseLocation=\"${baseLocation}\""
+            args << "-Dbase=\"$base\""
+            args << "-DbaseLocation=\"$baseLocation\""
 
-            args << "-DbuildId=\"${buildId}\""
+            args << "-DbuildId=\"$buildId\""
 
 
             if (type == BuildType.product) {
                 def productFile = productFile
-                args << "-Dproduct=\"${productFile}\""
+                args << "-Dproduct=\"$productFile\""
             }
 
             //----------  Build the pluginPath
             if (!usePreviousLinks && !extLocations.isEmpty()) {
                 def pluginPath = extLocations.join(File.pathSeparator)
-                args << "-DpluginPath=\"${pluginPath}\""
+                args << "-DpluginPath=\"$pluginPath\""
             }
 
             if(targetFile){
-                args << "-DtargetFile=\"${targetFile}\""
+                args << "-DtargetFile=\"$targetFile\""
             }
             
             //Built from the given property file
             //The properties are added at the end of the command line
             //The command line properties override the default properties from the file
             if (!ext.properties.isEmpty()) {
-                ext.properties.entrySet().each { args << "-D${it.key}=\"${it.value}\"" }
+                ext.properties.entrySet().each { args << "-D$it.key=\"$it.value\"" }
             }
 
             //-- Data directory
-            args << "-data \"${data}\""
+            args << "-data \"$data\""
 
             String eclipseCommand = args.join(" ")
 
             println "[PDE Command line] java $eclipseCommand"
-            println "Building in ${buildDirectory} ..."
+            println "Building in $buildDirectory ..."
             ant.exec(executable: "java", dir: buildDirectory, failonerror: true) {  arg(line: eclipseCommand)  }
         }
     }
@@ -116,6 +116,6 @@ class AntPdeBuild extends ConventionTask {
         File pdeBuildDir = pluginsDir.listFiles().find {
             it.directory && it.name.equals("org.eclipse.pde.build") || it.name.startsWith("org.eclipse.pde.build_")
         }
-        return "${pdeBuildDir.absolutePath}/scripts"
+        return "$pdeBuildDir.absolutePath/scripts"
     }
 }

@@ -47,7 +47,7 @@ class AntPdeInit extends ConventionTask {
                 project.mkdir(destLinkDir);
 
                 if (linksSrcDirectory) {
-                    println "Fetching link files from ${linksSrcDirectory}..."
+                    println "Fetching link files from $linksSrcDirectory..."
                     // Copy the temp links
                     project.copy {
                         fileset(dir: pdeBuild.linksSrcDirectory) { include(name: '*.link') }
@@ -56,8 +56,8 @@ class AntPdeInit extends ConventionTask {
                     println "Generating link files..."
                     for (String extLoc : extLocations) {
                         def linkFileName = extLoc.replaceAll("[\\\\/:]", "_")
-                        linkFileName = destLinkDir + "/${linkFileName}.link"
-                        new File(linkFileName).write("path=${extLoc}")
+                        linkFileName = destLinkDir + "/$linkFileName.link"
+                        new File(linkFileName).write("path=$extLoc")
                         println " -> generated " + linkFileName
                     }
                 }
@@ -95,7 +95,7 @@ class AntPdeInit extends ConventionTask {
                 println "Link files directory    : " + linksSrcDirectory
             } else {
                 if (targetFile) {
-                    println "Target Platform File    : ${targetFile}"
+                    println "Target Platform File    : $targetFile"
                 }
                 if (extLocations) {
                     println "Extension Locations     : "

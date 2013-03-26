@@ -45,9 +45,9 @@ public class PdeBuild implements Plugin<Project> {
     public void apply(final Project project) {
         PdeConvention conv = project.extensions.create("pdeBuild", PdeConvention)
         conv.with {
-            buildDirectory = "${project.buildDir}/pdeBuild"
-            publishDirectory = "${buildDirectory}/publish"
-            base = "${buildDirectory}/base"
+            buildDirectory = "$project.buildDir/pdeBuild"
+            publishDirectory = "$buildDirectory/publish"
+            base = "$buildDirectory/base"
         }
         configureClean(project)
         configureInit(project)
@@ -88,13 +88,13 @@ public class PdeBuild implements Plugin<Project> {
             // Some magic here: the parameter to Copy#into is evaluated as per Project#file, which states that a closure
             // will be recursivly resolved. The resolving also happens during the action phase and not the configuration
             // phase, at which point the pdeBuild convention has all the user-defined values.
-            into {"${conv.buildDirectory}/features"}
+            into {"$conv.buildDirectory/features"}
             exclude "**/*.class"
             eachFile { FileCopyDetails details ->
                 modifyCopyPath(details) { File root ->
                     def featureXml = new File(root, "feature.xml")
                     if(!featureXml.exists()){
-                        project.logger.warn "${root} doesn't contain a feature, perhaps you should exclude it?"
+                        project.logger.warn "$root doesn't contain a feature, perhaps you should exclude it?"
                         return null
                     }
                     def xml = new XmlSlurper().parse(featureXml)
@@ -106,13 +106,13 @@ public class PdeBuild implements Plugin<Project> {
         project.task(type: Copy, description: "Copy the plugins to the build directory.", COPY_PLUGINS_TASK_NAME){
             includeEmptyDirs = false
             PdeConvention conv = project.pdeBuild
-            into {"${conv.buildDirectory}/plugins"}
+            into {"$conv.buildDirectory/plugins"}
             exclude "**/*.class"
             eachFile { FileCopyDetails details ->
                 modifyCopyPath(details) { File root ->
                     def manifestFile = new File(root, "META-INF/MANIFEST.MF")
                     if(!manifestFile.exists()){
-                        project.logger.warn "${root} doesn't contain a plugin, perhaps you should exclude it?"
+                        project.logger.warn "$root doesn't contain a plugin, perhaps you should exclude it?"
                          return null
                     }
                         def fis = new FileInputStream(manifestFile)

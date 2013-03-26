@@ -37,7 +37,7 @@ class AntPdeDeploy  extends ConventionTask{
     void deploy() {
         PdeConvention conv = project.pdeBuild;
         //delete the publish directory
-        println "Deleting ${conv.publishDirectory} file..."
+        println "Deleting $conv.publishDirectory file..."
         project.delete(conv.publishDirectory)
 
         
@@ -46,7 +46,7 @@ class AntPdeDeploy  extends ConventionTask{
             buildLabel = conv.buildId
         }
         
-        def zipDir = "${conv.buildDirectory}/${buildLabel}"
+        def zipDir = "$conv.buildDirectory/$buildLabel"
         
         ant.unzip(dest: conv.publishDirectory) {
             fileset(dir: zipDir) {

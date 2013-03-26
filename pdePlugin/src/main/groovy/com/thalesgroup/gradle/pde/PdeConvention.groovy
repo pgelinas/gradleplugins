@@ -83,7 +83,7 @@ public class PdeConvention {
                 if (!(new File(loc).exists())) {
                     File locFile = new File(eclipseExtensionsRoot, loc)
                         if (!locFile.exists()) {
-                            throw new GradleException("${loc} does not exist.")
+                            throw new GradleException("$loc does not exist.")
                         }
                     loc = locFile.toString()
                 }

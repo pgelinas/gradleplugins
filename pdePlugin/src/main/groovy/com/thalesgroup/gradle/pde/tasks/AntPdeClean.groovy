@@ -54,7 +54,7 @@ class AntPdeClean extends ConventionTask {
             project.mkdir(destLinkDir)
             
             def rcpcleaner = "R:/extloc/platform-3.3/rcpcleaner"
-            new File("${destLinkDir}/org.thalesgroup.rcpcleaner.link").write("path=${rcpcleaner}")
+            new File("$destLinkDir/org.thalesgroup.rcpcleaner.link").write("path=$rcpcleaner")
             
             try {
                 new CleanTargetPlatformAction(ant, conv.baseLocation, conv.buildDirectory, conv.data).clean()

@@ -26,10 +26,10 @@ pdeBuild {
     
     /* the working directory
      * all plugins and features source code will be fetched here */
-    buildDirectory = "${buildDir}/pdeBuild"
+    buildDirectory = "$buildDir/pdeBuild"
 
     /* all artifacts produced by the PDE build will be unziped here */
-    publishDirectory = "${buildDirectory}/publish"
+    publishDirectory = "$buildDirectory/publish"
     
     /* enter here all the feature ids that you want to build. */
     features = ["org.gradle.feature.example", "org.gradle.feature.example2"]
@@ -39,11 +39,11 @@ pdeBuild {
 //    buildId = "20101124-0845"
 
     /* the target platform to use to build the features (the $base folder MUST contain an "eclipse" folder) */
-    base = "${buildDirectory}/base"
+    base = "$buildDirectory/base"
     
     /* The target platform definition file. This file is handled by PDE itself to generate the target platform 
      * at the baseLocation. This requires the eclipseLauncher to be at least 3.8; 4.2 should be fine too.*/
-    targetFile = "${rootDir}/../target/test.target"
+    targetFile = "$rootDir/../target/test.target"
     
     /* use .link files instead of the -DpluginPath variable (default is false) */
 //    usePreviousLinks = true
